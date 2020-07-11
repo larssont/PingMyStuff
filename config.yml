@@ -1,0 +1,27 @@
+message:
+  down: '{{ name }} at {{ address }} is now down (Status {{ status }}).'
+  up: '{{ name }} at {{ address }} is now up.'
+notifiers:
+- discord:
+    address: https://discordapp.com/api/webhooks/***/***
+    messageDataName: content
+    sites:
+    - Jellyfin
+    - Ombi
+- telegram:
+    address: https://api.telegram.org/***/sendMessage
+    data:
+      chat_id: 123456
+      disable_web_page_preview: 1
+      parse_mode: markdown
+    messageDataName: text
+    sites:
+    - Jellyfin
+    - Ombi
+    - Bitwarden
+    - Sabnzbd
+sites:
+  Bitwarden:
+    address: https://bitwarden.mydomain.com
+  Jellyfin:
+    address: https://jellyfin.mydomain.com
