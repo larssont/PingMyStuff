@@ -81,21 +81,18 @@ def get_args():
     return parser.parse_args()
 
 
-def run(config_file):
+def main():
+    args = get_args()
+    load_config(args.config)
+    validate_conf()
+
     sites = config["sites"]
     for site, site_opt in sites.items():
         new_status = get_status(site_opt["address"])
         if has_status_changed(site_opt, new_status):
             check_notifiers(site, new_status)
             sites[site]["status"] = new_status
-            write_config(config_file)
-
-
-def main():
-    args = get_args()
-    load_config(args.config)
-    validate_conf()
-    run(args.config)
+            write_config(args.config)
 
 
 if __name__ == "__main__":
