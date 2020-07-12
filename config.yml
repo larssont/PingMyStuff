@@ -2,13 +2,13 @@ message:
   down: '{{ name }} at {{ address }} is now down (Status {{ status }}).'
   up: '{{ name }} at {{ address }} is now up.'
 notifiers:
-- discord:
+  discord:
     address: https://discordapp.com/api/webhooks/***/***
     messageDataName: content
     sites:
     - Jellyfin
     - Ombi
-- telegram:
+  telegram:
     address: https://api.telegram.org/***/sendMessage
     data:
       chat_id: 123456
@@ -23,5 +23,9 @@ notifiers:
 sites:
   Bitwarden:
     address: https://bitwarden.mydomain.com
+    consider_up:
+      - 200
   Jellyfin:
     address: https://jellyfin.mydomain.com
+    consider_up:
+      - 200
