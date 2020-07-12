@@ -20,10 +20,11 @@ def write_config():
         yaml.dump(config, file)
 
 
-def notify(site, status):
-    for notifier in config["notifiers"]:
-        v = next(iter(notifier.values()))
-        sites = v["sites"]
+def validate_conf():
+    v = Validator(schema)
+    if not v.validate(config):
+        raise Exception(v.errors)
+
 
 def insert_conf_vars(text):
     new_text = text
@@ -88,4 +89,9 @@ def run():
 def main():
     get_args()
     load_config()
+    validate_conf()
     run()
+
+
+if __name__ == "__main__":
+    main()
