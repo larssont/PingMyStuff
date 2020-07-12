@@ -11,7 +11,7 @@ schema = {
             "schema": {
                 "address": {"type": "string", "required": True},
                 "sites": {"type": "list", "required": True},
-                "messageDataName": {"type": "string", "required": True},
+                "msgDataKey": {"type": "string", "required": True},
                 "data": {"type": "dict"},
             },
         },

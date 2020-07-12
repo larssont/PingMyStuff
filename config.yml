@@ -4,7 +4,7 @@ message:
 notifiers:
   discord:
     address: https://discordapp.com/api/webhooks/***/***
-    messageDataName: content
+    msgDataKey: content
     sites:
     - Jellyfin
     - Ombi
@@ -14,7 +14,7 @@ notifiers:
       chat_id: 123456
       disable_web_page_preview: 1
       parse_mode: markdown
-    messageDataName: text
+    msgDataKey: text
     sites:
     - Jellyfin
     - Ombi

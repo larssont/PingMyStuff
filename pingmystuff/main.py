@@ -43,7 +43,7 @@ def send_notification(notifier_opt, status, site):
     msg = get_status_text(status, config["sites"][site]["consider_up"])
     msg = insert_str_vars(msg, conf_vars)
 
-    data[notifier_opt["messageDataName"]] = msg
+    data[notifier_opt["msgDataKey"]] = msg
     address = notifier_opt["address"]
     requests.post(address, data=data)
 
