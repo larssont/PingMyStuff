@@ -5,7 +5,6 @@ from cerberus import Validator
 from schema_config import schema
 
 config_file = ""
-conf_vars = {"name": None, "address": None, "status": None}
 config = {}
 
 
@@ -26,12 +25,12 @@ def validate_conf():
         raise Exception(v.errors)
 
 
-def insert_conf_vars(text):
-    new_text = text
-    for key, value in conf_vars.items():
+def insert_str_vars(str_, str_vars):
+    new_str = str_
+    for key, value in str_vars.items():
         old = f"{{{{ {key} }}}}"
-        new_text = new_text.replace(old, str(value))
-    return new_text
+        new_str = new_str.replace(old, str(value))
+    return new_str
 
 
 def get_args():
@@ -42,27 +41,26 @@ def get_args():
     config_file = args.config
 
 
-def send_notification(notifier_val, status, site):
-    data = dict.get(notifier_val, "data")
+def send_notification(notifier_opt, status, site):
+    site_opt = config["sites"][site]
+    data = dict.get(notifier_opt, "data")
     if data is None:
         data = {}
 
-    conf_vars["name"] = site
-    conf_vars["address"] = config["sites"][site]["address"]
-    conf_vars["status"] = status
+    conf_vars = {"name": site, "address": site_opt["address"], "status": status}
 
-    text = get_status_text(status, config["sites"][site]["consider_up"])
-    text = insert_conf_vars(text)
+    msg = get_status_text(status, config["sites"][site]["consider_up"])
+    msg = insert_str_vars(msg, conf_vars)
 
-    data[notifier_val["messageDataName"]] = text
-    address = notifier_val["address"]
+    data[notifier_opt["messageDataName"]] = msg
+    address = notifier_opt["address"]
     requests.post(address, data=data)
 
 
 def check_notifiers(site, status):
-    for notifier_val in config["notifiers"].values():
-        if site in notifier_val["sites"]:
-            send_notification(notifier_val, status, site)
+    for notifier_opt in config["notifiers"].values():
+        if site in notifier_opt["sites"]:
+            send_notification(notifier_opt, status, site)
 
 
 def get_status(address):
