@@ -59,6 +59,12 @@ def send_notification(notifier_val, status, site):
     requests.post(address, data=data)
 
 
+def check_notifiers(site, status):
+    for notifier_val in config["notifiers"].values():
+        if site in notifier_val["sites"]:
+            send_notification(notifier_val, status, site)
+
+
 def get_status(address):
     return requests.get(address).status_code
 
