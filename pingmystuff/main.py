@@ -48,7 +48,7 @@ def send_notification(notifier_opt, status, site):
     requests.post(address, data=data)
 
 
-def check_notifiers(site, status):
+def call_notifiers(site, status):
     for notifier_opt in config["notifiers"].values():
         if site in notifier_opt["sites"]:
             send_notification(notifier_opt, status, site)
@@ -90,7 +90,7 @@ def main():
     for site, site_opt in sites.items():
         new_status = get_status(site_opt["address"])
         if has_status_changed(site_opt, new_status):
-            check_notifiers(site, new_status)
+            call_notifiers(site, new_status)
             sites[site]["status"] = new_status
             write_config(args.config)
 
