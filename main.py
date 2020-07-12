@@ -47,42 +47,46 @@ def send_notification(notifier_val, status, site):
     if data is None:
         data = {}
 
-            text = (
-                config["message"]["up"] if status == 200 else config["message"]["down"]
-            )
+    conf_vars["name"] = site
+    conf_vars["address"] = config["sites"][site]["address"]
+    conf_vars["status"] = status
 
-            conf_vars["name"] = site
-            conf_vars["address"] = config["sites"][site]["address"]
-            conf_vars["status"] = status
+    text = get_status_text(status, config["sites"][site]["consider_up"])
+    text = insert_conf_vars(text)
 
-            text = insert_conf_vars(text)
-
-            data[v["messageDataName"]] = text
-            address = v["address"]
-            requests.post(address, data=data)
+    data[notifier_val["messageDataName"]] = text
+    address = notifier_val["address"]
+    requests.post(address, data=data)
 
 
 def get_status(address):
     return requests.get(address).status_code
 
 
-def insert_conf_vars(text):
-    new_text = text
-    for key, value in conf_vars.items():
-        old = f"{{{{ {key} }}}}"
-        new_text = new_text.replace(old, str(value))
-    return new_text
+def get_status_text(status, status_list):
+    if status in status_list:
+        return config["message"]["up"]
+    return config["message"]["down"]
+
+
+def has_status_changed(site_opt, new_status):
+    consider_up = site_opt["consider_up"]
+    old_status = site_opt.get("status")
+
+    if new_status != old_status:
+        if old_status in consider_up or new_status in consider_up:
+            return True
+
+    return False
 
 
 def run():
-    for k, v in config["sites"].items():
-        address = v["address"]
-        old_status = config["sites"][k].get("status")
-        new_status = get_status(address)
-
-        if old_status != new_status:
-            notify(k, new_status)
-            config["sites"][k]["status"] = new_status
+    sites = config["sites"]
+    for site, site_opt in sites.items():
+        new_status = get_status(site_opt["address"])
+        if has_status_changed(site_opt, new_status):
+            check_notifiers(site, new_status)
+            sites[site]["status"] = new_status
             write_config()
 
 
