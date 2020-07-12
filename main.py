@@ -1,20 +1,22 @@
 import requests
 import yaml
+import argparse
+from cerberus import Validator
+from schema_config import schema
 
-config_path = r"./config.yml"
-config = {}
-
+config_file = ""
 conf_vars = {"name": None, "address": None, "status": None}
+config = {}
 
 
 def load_config():
     global config
-    with open(config_path) as file:
+    with open(config_file) as file:
         config = yaml.load(file, Loader=yaml.FullLoader)
 
 
 def write_config():
-    with open(config_path, "w") as file:
+    with open(config_file, "w") as file:
         yaml.dump(config, file)
 
 
@@ -23,10 +25,26 @@ def notify(site, status):
         v = next(iter(notifier.values()))
         sites = v["sites"]
 
-        if site in sites:
-            data = dict.get(v, "data")
-            if data is None:
-                data = {}
+def insert_conf_vars(text):
+    new_text = text
+    for key, value in conf_vars.items():
+        old = f"{{{{ {key} }}}}"
+        new_text = new_text.replace(old, str(value))
+    return new_text
+
+
+def get_args():
+    global config_file
+    parser = argparse.ArgumentParser()
+    parser.add_argument("config", help="YAML config file path")
+    args = parser.parse_args()
+    config_file = args.config
+
+
+def send_notification(notifier_val, status, site):
+    data = dict.get(notifier_val, "data")
+    if data is None:
+        data = {}
 
             text = (
                 config["message"]["up"] if status == 200 else config["message"]["down"]
@@ -67,6 +85,7 @@ def run():
             write_config()
 
 
-if __name__ == "__main__":
+def main():
+    get_args()
     load_config()
     run()
