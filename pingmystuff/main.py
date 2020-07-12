@@ -4,18 +4,17 @@ import argparse
 from cerberus import Validator
 from schema_config import schema
 
-config_file = ""
 config = {}
 
 
-def load_config():
+def load_config(file):
     global config
-    with open(config_file) as file:
+    with open(file) as file:
         config = yaml.load(file, Loader=yaml.FullLoader)
 
 
-def write_config():
-    with open(config_file, "w") as file:
+def write_config(file):
+    with open(file, "w") as file:
         yaml.dump(config, file)
 
 
@@ -31,14 +30,6 @@ def insert_str_vars(str_, str_vars):
         old = f"{{{{ {key} }}}}"
         new_str = new_str.replace(old, str(value))
     return new_str
-
-
-def get_args():
-    global config_file
-    parser = argparse.ArgumentParser()
-    parser.add_argument("config", help="YAML config file path")
-    args = parser.parse_args()
-    config_file = args.config
 
 
 def send_notification(notifier_opt, status, site):
@@ -84,21 +75,27 @@ def has_status_changed(site_opt, new_status):
     return False
 
 
-def run():
+def get_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("config", help="YAML config file path")
+    return parser.parse_args()
+
+
+def run(config_file):
     sites = config["sites"]
     for site, site_opt in sites.items():
         new_status = get_status(site_opt["address"])
         if has_status_changed(site_opt, new_status):
             check_notifiers(site, new_status)
             sites[site]["status"] = new_status
-            write_config()
+            write_config(config_file)
 
 
 def main():
-    get_args()
-    load_config()
+    args = get_args()
+    load_config(args.config)
     validate_conf()
-    run()
+    run(args.config)
 
 
 if __name__ == "__main__":
