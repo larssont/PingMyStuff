@@ -1,4 +1,4 @@
-# PingMyStuff
+# Ping My Stuff
 
 A simple Python script that pings your websites for their status and notifies you if necessary.
 
@@ -6,10 +6,10 @@ A simple Python script that pings your websites for their status and notifies yo
 
 ```bash
 # Clone this repository
-$ git clone https://github.com/larssont/PingMyStuff.git
+$ git clone https://github.com/larssont/ping-my-stuff.git
 
 # Go into the repository
-$ cd PingMyStuff
+$ cd ping-my-stuff
 ```
 
 You can now either install all requirements directly and start `main.py` or you can create a venv and run it from there. I'll do the latter.
@@ -83,7 +83,7 @@ $ crontab -e
 In the editor that opened up can you insert the following line to run the program every 5 minutes. Replace `/path/to/PingMyStuff` with the actual path.
 
 ```bash
-*/5 * * * * cd /path/to/PingMyStuff && bash start.sh
+*/5 * * * * cd /path/to/ping-my-stuff && bash start.sh
 ```
 
 To generate your own cron schedule expression you can use https://crontab.guru/ for example.
